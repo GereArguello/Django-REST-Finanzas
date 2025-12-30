@@ -1,0 +1,55 @@
+# ======================
+# Python
+# ======================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ======================
+# Virtual environment
+# ======================
+venv/
+.env/
+.env.*
+
+# ======================
+# Django
+# ======================
+*.log
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Django migrations cache
+*/migrations/__pycache__/
+
+# ======================
+# Django settings (opcional si usás env vars)
+# ======================
+# settings/local.py
+# settings/production.py
+
+# ======================
+# Tests / coverage
+# ======================
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+
+# ======================
+# VS Code
+# ======================
+.vscode/
+
+# ======================
+# OS
+# ======================
+.DS_Store
+Thumbs.db
+
+# ======================
+# Node (por si más adelante agregás frontend)
+# ======================
+node_modules/
