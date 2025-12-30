@@ -3,18 +3,22 @@ from rest_framework import serializers
 from .models import Transaction
 
 class TransactionSerializer(serializers.ModelSerializer):
+
+    created_at = serializers.DateTimeField(
+        format="%d/%m/%Y %H:%M", read_only=True
+    )
+
     class Meta:
         model = Transaction
         fields = [
             'id',
             'account',
             'category',
-            'transaction_type',
             'amount',
             'description',
             'created_at'
         ]
-        read_only_fields = ['id','created_at']
+        read_only_fields = ['id']
 
     def validate_account(self, value):
         request = self.context.get('request')
@@ -39,14 +43,3 @@ class TransactionSerializer(serializers.ModelSerializer):
                 "El monto debe ser mayor a cero."
             )
         return value
-
-    def validate(self, data):
-        category = data['category']
-        transaction_type = data['transaction_type']
-
-        if category.category_type != transaction_type:
-            raise serializers.ValidationError(
-                "El tipo de transacción no coincide con el tipo de la categoría."
-            )
-
-        return data

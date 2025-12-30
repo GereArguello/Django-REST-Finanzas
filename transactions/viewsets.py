@@ -18,7 +18,7 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
         account = transaction.account
 
-        if transaction.transaction_type == CategoryType.INCOME:
+        if transaction.category.category_type == CategoryType.INCOME:
             account.balance += transaction.amount
         else:
             account.balance -= transaction.amount
