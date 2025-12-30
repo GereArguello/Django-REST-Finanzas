@@ -1,13 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from utils.choices import AccountType
 
 class Account(models.Model):
-
-    class AccountType(models.TextChoices):
-        BANK = "BANK", "Banco"
-        CASH = "CASH", "Efectivo"
-        WALLET = "WALLET", "Billetera virtual"
-        CRYPTO = "CRYPTO", "Cripto"
 
     class Currency(models.TextChoices):
         ARS = "ARS", "Peso Argentino"
