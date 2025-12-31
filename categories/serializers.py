@@ -18,3 +18,6 @@ class CategorySerializer(serializers.ModelSerializer):
             'created_at'
         ]
         read_only_fields = ['id']
+
+class CategorySetActiveSerializer(serializers.Serializer):
+    is_active = serializers.BooleanField()

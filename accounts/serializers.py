@@ -16,3 +16,6 @@ class AccountSerializer(serializers.ModelSerializer):
             'created_at',
         ]
         read_only_fields = ['id', 'created_at']
+
+class AccountSetActiveSerializer(serializers.Serializer):
+    is_active = serializers.BooleanField()
