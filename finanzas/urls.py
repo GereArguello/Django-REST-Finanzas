@@ -22,11 +22,13 @@ from rest_framework.routers import DefaultRouter
 from accounts.viewsets import AccountViewSet
 from categories.viewsets import CategoryViewSet
 from transactions.viewsets import TransactionViewSet
+from reports.viewsets import ReportViewSet
 
 router = DefaultRouter()
 router.register('accounts', AccountViewSet, basename='account')
 router.register('categories', CategoryViewSet, basename='category')
 router.register('transactions', TransactionViewSet, basename='transaction')
+router.register('reports', ReportViewSet, basename='reports')
 
 
 
@@ -34,5 +36,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('api/', include(router.urls)),
-    path('api/', include('reports.urls'))
 ]
