@@ -5,7 +5,6 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from accounts.models import Account
 from categories.models import Category
-from .models import Transaction
 
 
 class TransactionsViewSetTests(TestCase):
@@ -33,7 +32,7 @@ class TransactionsViewSetTests(TestCase):
             user = self.user_category,
             name = "Verduras",
             category_type = "EXPENSE",
-            is_active = True,
+            is_active = True
         )
         self.client = APIClient()
         self.client.force_authenticate(user=self.user_account)
