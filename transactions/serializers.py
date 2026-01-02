@@ -37,22 +37,16 @@ class TransactionSerializer(serializers.ModelSerializer):
                 self.fields['category'].queryset.filter(user=request.user)
             )
 
-    def validate_account(self, value):
-        request = self.context.get('request')
-        if request and value.user != request.user:
-            raise serializers.ValidationError(
-                "La cuenta no pertenece al usuario."
-            )
-        return value
+    def validate(self, data):
+        account = data.get("account")
+        category = data.get("category")
 
-    
-    def validate_category(self, value):
-        request = self.context.get('request')
-        if request and value.user != request.user:
+        if account and category and account.user != category.user:
             raise serializers.ValidationError(
-                "La categoría no pertenece al usuario."
+                "La cuenta y la categoría no pertenecen al mismo usuario."
             )
-        return value
+
+        return data
     
     def validate_amount(self, value):
         if value <= 0:
