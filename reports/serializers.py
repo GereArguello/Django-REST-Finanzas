@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from decimal import Decimal
+
 
 class CategoryAmountSerialiszer(serializers.Serializer):
     category = serializers.CharField()
@@ -11,11 +13,19 @@ class MonthlyBalanceSerializer(serializers.Serializer):
     expense = serializers.DecimalField(max_digits=12, decimal_places=2)
     incomes_by_category = CategoryAmountSerialiszer(many=True)
     expenses_by_category = CategoryAmountSerialiszer(many=True)
-    balance = serializers.SerializerMethodField()
+
+    balance = serializers.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        read_only=True
+    )
 
     def get_month(self, obj):
-        # obj["month"] es una fecha (ej: 2026-01-01)
         return obj["month"].strftime("%Y-%m")
 
-    def get_balance(self, obj):
-        return obj["income"] - obj["expense"]
+    def to_representation(self, obj):
+        data = super().to_representation(obj)
+        balance = Decimal(data["income"]) - Decimal(data["expense"])
+        data["balance"] = f"{balance:.2f}"
+        return data
+
