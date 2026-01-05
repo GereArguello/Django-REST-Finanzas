@@ -6,21 +6,36 @@ from rest_framework.response import Response
 
 from django.db.models import Sum, Case, When, DecimalField
 from django.db.models.functions import TruncMonth
+from drf_spectacular.utils import extend_schema, OpenApiResponse
 
 from collections import defaultdict 
-
 from transactions.models import Transaction
 from .serializers import MonthlyBalanceSerializer
 
 
 class ReportViewSet(viewsets.ViewSet):
-
     """
-    Devuelve el balance mensual del usuario autenticado.
+    Reportes financieros del usuario autenticado.
     """
 
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(
+        summary="Balance mensual",
+        description=(
+            "Devuelve el balance mensual del usuario autenticado.\n\n"
+            "Para cada mes se informa:\n"
+            "- Total de ingresos\n"
+            "- Total de gastos\n"
+            "- Detalle de gastos por categoría\n"
+            "- Detalle de ingresos por categoría\n\n"
+            "Los resultados se devuelven ordenados por mes (descendente)."
+        ),
+        responses={
+            200: MonthlyBalanceSerializer(many=True),
+            401: OpenApiResponse(description="No autenticado"),
+        },
+    )
     @action(detail=False, methods=["get"], url_path="monthly-balance")
     def monthly_balance(self, request):
 

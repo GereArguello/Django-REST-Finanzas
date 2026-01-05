@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'accounts',
     'categories',
-    'transactions'
+    'transactions',
+    'docs',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -124,5 +126,7 @@ STATIC_URL = 'static/'
 REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-    )
+    ),
+        'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+
 }
