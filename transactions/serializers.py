@@ -1,5 +1,6 @@
 from rest_framework import serializers
-
+from accounts.models import Account
+from categories.models import Category
 from .models import Transaction
 
 class TransactionSerializer(serializers.ModelSerializer):
@@ -7,6 +8,16 @@ class TransactionSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     ) #Nos aseguramos que el user siempre venga de request
+
+    account = serializers.SlugRelatedField(
+        queryset=Account.objects.none(),
+        slug_field="name"
+    )
+
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.none(),
+        slug_field="name"
+    )
 
     created_at = serializers.DateTimeField(
         format="%d/%m/%Y %H:%M", read_only=True
@@ -54,3 +65,5 @@ class TransactionSerializer(serializers.ModelSerializer):
                 "El monto debe ser mayor a cero."
             )
         return value
+    
+

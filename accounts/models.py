@@ -4,6 +4,7 @@ from utils.choices import AccountType
 
 class Account(models.Model):
 
+
     class Currency(models.TextChoices):
         ARS = "ARS", "Peso Argentino"
         USD = "USD", "Dólar"
@@ -21,5 +22,8 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.balance}"
+    
+    class Meta:
+        unique_together = ["user", "name"]
 
     
