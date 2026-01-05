@@ -10,12 +10,12 @@ class TransactionSerializer(serializers.ModelSerializer):
     ) #Nos aseguramos que el user siempre venga de request
 
     account = serializers.SlugRelatedField(
-        queryset=Account.objects.none(),
+        queryset=Account.objects.all(),
         slug_field="name"
     )
 
     category = serializers.SlugRelatedField(
-        queryset=Category.objects.none(),
+        queryset=Category.objects.all(),
         slug_field="name"
     )
 
