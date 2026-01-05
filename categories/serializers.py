@@ -19,5 +19,13 @@ class CategorySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id']
 
+    def validate_name(self, value):
+        user = self.context["request"].user
+        if Category.objects.filter(user=user, name=value).exists():
+            raise serializers.ValidationError(
+                "Ya existe una categoría con ese nombre."
+            )
+        return value
+
 class CategorySetActiveSerializer(serializers.Serializer):
     is_active = serializers.BooleanField()
