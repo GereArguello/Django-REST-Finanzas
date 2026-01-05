@@ -1,3 +1,5 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework.exceptions import ValidationError as DRFValidationError
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -48,6 +50,11 @@ class AccountViewSet(viewsets.ModelViewSet):
         return Account.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
+        try:
+            Account.objects.check_can_create_for_user(self.request.user)
+        except DjangoValidationError as e:
+            raise DRFValidationError(e.messages)
+        
         serializer.save(user=self.request.user)
 
 

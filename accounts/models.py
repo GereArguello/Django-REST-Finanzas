@@ -1,9 +1,19 @@
+from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from utils.choices import AccountType
 
-class Account(models.Model):
+# Regla de dominio a nivel colección que impide crear más de 10 cuentas por usuario
 
+
+class AccountManager(models.Manager):
+    def check_can_create_for_user(self, user):
+        if self.filter(user=user).count() >= 10:
+            raise ValidationError(
+                "Llegaste al límite de cuentas. Máximo: 10."
+            )
+
+class Account(models.Model):
 
     class Currency(models.TextChoices):
         ARS = "ARS", "Peso Argentino"
@@ -11,7 +21,8 @@ class Account(models.Model):
         EUR = "EUR", "Euro"
         USDT = "USDT", "Tether"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="accounts")
+    objects = AccountManager() #reemplazo del manager genérico
     name = models.CharField(max_length=50)
     provider = models.CharField(max_length=50, blank=True)
     account_type = models.CharField(max_length=10,choices=AccountType.choices)
