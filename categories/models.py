@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.contrib.auth.models import User
+from django.conf import settings
 from utils.choices import CategoryType
 
 class CategoryManager(models.Manager):
@@ -25,7 +25,7 @@ class CategoryManager(models.Manager):
 
 class Category(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     objects = CategoryManager()
     category_type = models.CharField(

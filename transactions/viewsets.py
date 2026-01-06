@@ -1,13 +1,11 @@
-from rest_framework import viewsets #status
-from rest_framework.decorators import action
-#from rest_framework.response import Response
+from rest_framework import viewsets 
 from rest_framework.permissions import IsAuthenticated
-from django.db import transaction as db_transaction
+from django.db import transaction
 from drf_spectacular.utils import (extend_schema,extend_schema_view,OpenApiResponse)
 
 from .serializers import TransactionSerializer
 from .models import Transaction
-from utils.choices import CategoryType
+
 
 @extend_schema_view(
     list=extend_schema(
@@ -56,15 +54,23 @@ class TransactionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Transaction.objects.filter(user=self.request.user)
 
+    @transaction.atomic
     def perform_create(self, serializer):
-        with db_transaction.atomic():
-            transaction = serializer.save(user=self.request.user)
+        transaction = serializer.save(user=self.request.user)
+        transaction.account.recalculate_balance()
 
-            account = transaction.account
+    @transaction.atomic
+    def perform_update(self, serializer):
+        old_account = serializer.instance.account
+        transaction = serializer.save(user=self.request.user)
+        new_account = transaction.account
 
-            if transaction.category.category_type == CategoryType.INCOME:
-                account.balance += transaction.amount
-            else:
-                account.balance -= transaction.amount
+        old_account.recalculate_balance()
+        if old_account != new_account:
+            new_account.recalculate_balance()
 
-            account.save()
+    @transaction.atomic
+    def perform_destroy(self, instance):
+        account = instance.account
+        instance.delete()
+        account.recalculate_balance()
