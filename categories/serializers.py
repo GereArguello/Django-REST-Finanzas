@@ -26,6 +26,16 @@ class CategorySerializer(serializers.ModelSerializer):
                 "Ya existe una categoría con ese nombre."
             )
         return value
+    
+    def validate(self, data):
+        if self.instance is None:
+            Category.objects.check_can_create(
+                user=self.context["request"].user,
+                category_type=data.get("category_type")
+            )
+        return data
+
+
 
 class CategorySetActiveSerializer(serializers.Serializer):
     is_active = serializers.BooleanField()

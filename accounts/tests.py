@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
-from accounts.models import Account
+from .models import Account
 
 class AccountsViewSetsTests(TestCase):
     def setUp(self):
