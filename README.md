@@ -142,7 +142,6 @@ Próximos pasos posibles:
 
 * Autenticación con JWT
 * Paginación y filtros avanzados
-* Documentación con Swagger / OpenAPI
 * Deploy en entorno productivo
 
 ---
