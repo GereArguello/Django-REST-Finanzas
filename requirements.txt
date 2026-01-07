@@ -1,2 +1,4 @@
 Django==6.0
 djangorestframework==3.16.1
+drf-spectacular==0.29.0
+PyYAML==6.0.3
