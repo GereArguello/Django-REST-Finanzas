@@ -28,10 +28,11 @@ class AccountSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         user = self.context["request"].user
-        if Account.objects.filter(user=user, name=value).exists():
-            raise serializers.ValidationError(
-                "Ya existe una cuenta con ese nombre."
-            )
+        if not self.instance:
+            if Account.objects.filter(user=user, name=value).exists():
+                raise serializers.ValidationError(
+                    "Ya existe una cuenta con ese nombre."
+                )
         return value
 
 class AccountSetActiveSerializer(serializers.Serializer):
