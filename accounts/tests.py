@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
-from .models import Account
+from .models import Account, AccountManager
 
 class AccountsViewSetsTests(TestCase):
     def setUp(self):
@@ -12,13 +12,13 @@ class AccountsViewSetsTests(TestCase):
             password="1234"
         )
 
-        for i in range(10):
+        for i in range(AccountManager.MAX_ACTIVE_ACCOUNTS):
             Account.objects.create(
                 user=self.user,
                 name=f"{i}",
                 provider="Santander rio",
                 account_type="BANK",
-                balance=50000,
+                opening_balance=50000,
                 currency="ARS",
                 is_active=True,
             )
@@ -33,11 +33,41 @@ class AccountsViewSetsTests(TestCase):
             "name": "ejemplo",
             "provider": "ejemplo",
             "account_type" :"BANK",
-            "balance" : 50000,
+            "opening_balance" : 50000,
             "currency" : "ARS",
             "is_active" : True
         }
         response = self.client.post(url, data, format="json")
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_can_create_account_after_deactivating_one(self):
+        account = Account.objects.first()
+        pk = account.id
+
+        url = reverse("account-set-active", kwargs={"pk": pk})
+
+        data = {
+            "is_active" : False
+        }
+
+        response = self.client.patch(url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        account.refresh_from_db()
+        self.assertFalse(account.is_active)
+
+        url = reverse("account-list")
+
+        data = {
+            "name": "ejemplo",
+            "provider": "ejemplo",
+            "account_type" :"BANK",
+            "opening_balance" : 50000,
+            "currency" : "ARS",
+            "is_active" : True
+        }
+        response = self.client.post(url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
     

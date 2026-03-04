@@ -72,15 +72,24 @@ class AccountViewSet(viewsets.ModelViewSet):
             404: OpenApiResponse(description="Cuenta no encontrada"),
         },
     )
-    @action(methods=["PATCH"],detail=True,url_path="set-active",serializer_class=AccountSetActiveSerializer)
+    @action(methods=["PATCH"], detail=True, url_path="set-active", serializer_class=AccountSetActiveSerializer)
     def set_active(self, request, pk=None):
         account = self.get_object()
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        account.is_active = serializer.validated_data["is_active"]
-        account.save()
+        new_state = serializer.validated_data["is_active"]
+
+        # Solo validar si se intenta activar una cuenta que estaba inactiva
+        if new_state and not account.is_active:
+            try:
+                Account.objects.check_can_create_for_user(request.user)
+            except DjangoValidationError as e:
+                raise DRFValidationError(e.messages)
+
+        account.is_active = new_state
+        account.save(update_fields=["is_active"])
 
         return Response(
             AccountSerializer(account).data,

@@ -6,10 +6,18 @@ from utils.choices import AccountType
 
 
 class AccountManager(models.Manager):
+
+    MAX_ACTIVE_ACCOUNTS = 10
+
     def check_can_create_for_user(self, user):
-        if self.filter(user=user).count() >= 10:
+        
+        active_accounts = self.filter(
+            user=user,
+            is_active=True).count()
+        
+        if active_accounts >= self.MAX_ACTIVE_ACCOUNTS:
             raise ValidationError(
-                "Llegaste al límite de cuentas. Máximo: 10."
+                f"Llegaste al límite de cuentas activas ({self.MAX_ACTIVE_ACCOUNTS})."
             )
 
 
