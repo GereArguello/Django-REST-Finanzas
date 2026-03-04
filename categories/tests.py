@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.contrib.auth.models import User
-from .models import Category
+from .models import Category, CategoryManager
 
 class CategoriesViewSetsTests(TestCase):
     def setUp(self):
@@ -12,14 +12,14 @@ class CategoriesViewSetsTests(TestCase):
             password="1234"
         )
 
-        for i in range(10):
+        for i in range(CategoryManager.LIMITS["INCOME"]):
             Category.objects.create(
                 user = self.user,
                 name = f"income_{i}",
                 category_type = "INCOME",
                 is_active = True
             )
-        for i in range(20):
+        for i in range(CategoryManager.LIMITS["EXPENSE"]):
             Category.objects.create(
                 user = self.user,
                 name = f"expense_{i}",
@@ -41,7 +41,7 @@ class CategoriesViewSetsTests(TestCase):
         
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
     
-    def test_cannot_create_more_than_10_categories_expense(self):
+    def test_cannot_create_more_than_20_categories_expense(self):
         url = reverse("category-list")
 
         data = {
@@ -57,7 +57,7 @@ class CategoriesViewSetsTests(TestCase):
         Category.objects.filter(
             user=self.user,
             category_type="INCOME"
-        ).delete()
+        ).first().delete()
 
         url = reverse("category-list")
 

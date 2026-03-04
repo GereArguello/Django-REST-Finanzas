@@ -4,21 +4,23 @@ from django.conf import settings
 from utils.choices import CategoryType
 
 class CategoryManager(models.Manager):
-    def check_can_create(self, user, category_type):
-        limits = {
+
+    LIMITS = {
             "INCOME": 10,
-            "EXPENSE": 20,
-        }
+            "EXPENSE": 20
+    }
+    
+    def check_can_create(self, user, category_type):
 
-        if category_type not in limits:
+        if category_type not in self.LIMITS:
             return
-
+        
         count = self.filter(
             user=user,
             category_type=category_type
         ).count()
 
-        if count >= limits[category_type]:
+        if count >= self.LIMITS[category_type]:
             raise ValidationError(
                 f"Llegaste al límite de categorías {category_type}."
             )
