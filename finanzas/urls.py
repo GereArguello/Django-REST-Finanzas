@@ -18,7 +18,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
+from auths.views import RegisterView, LogoutView
 from accounts.viewsets import AccountViewSet
 from categories.viewsets import CategoryViewSet
 from transactions.viewsets import TransactionViewSet
@@ -28,13 +33,25 @@ router = DefaultRouter()
 router.register('accounts', AccountViewSet, basename='account')
 router.register('categories', CategoryViewSet, basename='category')
 router.register('transactions', TransactionViewSet, basename='transaction')
-router.register('reports', ReportViewSet, basename='reports')
+router.register('reports', ReportViewSet, basename='report')
 
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # login del panel DRF (solo útil en desarrollo)
     path('api-auth/', include('rest_framework.urls')),
+
+    # JWT
+    path('api/auth/register/', RegisterView.as_view(), name='register'),
+    path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/auth/login/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/auth/logout/', LogoutView.as_view(), name='logout'),
+
+    # documentación
     path('', include('docs.urls')),
+
+    # endpoints de tu API
     path('api/', include(router.urls)),
 ]
